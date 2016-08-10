@@ -1,7 +1,11 @@
 package skurski.solr.model;
 
-
-public class Searching {
+/**
+ * Data from search form.
+ *
+ * Used in Solr search engine.
+ */
+public class SearchForm {
 
     private String keywords;
 
@@ -15,7 +19,7 @@ public class Searching {
 
     @Override
     public String toString() {
-        return "Searching{" +
+        return "SearchForm{" +
                 "keywords='" + keywords + '\'' +
                 '}';
     }

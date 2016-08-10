@@ -8,7 +8,9 @@
 <body>
 <h1>Search Engine</h1>
 <p>${message}</p>
-<form:form method="POST" action="search" modelAttribute="searching">
+<p>See all products: <a href="http://localhost:8983/solr/db/select?indent=on&q=*:*&wt=json">
+    http://localhost:8983/solr/db/select?indent=on&q=*:*&wt=json</a></p>
+<form:form method="POST" action="search" modelAttribute="searchForm">
     <form:input path="keywords"/>&nbsp
     <input type="submit" value="Search"/>
 </form:form>

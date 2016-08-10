@@ -2,6 +2,7 @@ package skurski.solr.controller;
 
 
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,24 +10,31 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import skurski.solr.model.Searching;
-import skurski.solr.solr.Index;
+import skurski.solr.model.SearchForm;
+import skurski.solr.service.IndexService;
 
 import java.io.IOException;
+import java.util.List;
 
+/**
+ * Solr index controller.
+ *
+ * Responsible for invoking data importing from database to Solr indexes
+ * and for searching through service indexes to retrieve information.
+ */
 @Controller
-public class Database {
+public class IndexController {
 
     @Autowired
-    private Index index;
+    private IndexService indexService;
 
-    @RequestMapping("/db")
+    @RequestMapping("/import-db")
     public String importDb(Model model) {
         model.addAttribute("message", "Database imported to SOLR indexes.");
-        model.addAttribute("searching", new Searching());
+        model.addAttribute("searchForm", new SearchForm());
 
         try {
-            index.importFullDb();
+            indexService.importFullDb();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,10 +43,15 @@ public class Database {
     }
 
     @RequestMapping(value="/search", method= RequestMethod.POST)
-    public String search(@ModelAttribute Searching searching, Model model) {
+    public String search(@ModelAttribute SearchForm searchForm, Model model) {
         try {
-            SolrDocumentList result = index.querySolr(searching);
+            indexService.querySolr(searchForm);
+
+            SolrDocumentList result = indexService.getSolrDocuments();
             model.addAttribute("result", result);
+
+            List<FacetField.Count> facets = indexService.getFacets();
+            model.addAttribute("facets", facets);
         } catch (SolrServerException e) {
             e.printStackTrace();
         } catch (IOException e) {
